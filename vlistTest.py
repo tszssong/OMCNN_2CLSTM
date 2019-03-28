@@ -61,8 +61,7 @@ def _BatchExtraction(VideoCap, batchsize=batch_size, last_input=None, video_star
 
 
 
-def videoTest(VideoName):
-	net = Network.Net()
+def videoTest(VideoName, net):
 	net.is_training = False
 	input = tf.placeholder(tf.float32, (batch_size, framesnum + frame_skip, input_size[0], input_size[1], 3))
 	RNNmask_in = tf.placeholder(tf.float32, (batch_size, 28, 28, 128, 4 * 2))
@@ -121,8 +120,9 @@ if __name__ == '__main__':
     dataDir = '/Users/momo/Desktop/wy/'
     videoLists = sys.argv[1]
     f = open(dataDir + videoLists)
+    net = Network.Net()
     for line in f:
         filepath = line.strip()
         vname = dataDir + filepath
         print vname
-        videoTest(vname)
+        videoTest(vname, net)

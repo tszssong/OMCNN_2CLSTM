@@ -1,4 +1,5 @@
 model/pretrain/LSTMconv_prefinal_loss05_dp075_075MC100-200000.data-00000-of-00001
+omcnnResults/
 .idea
 .idea/*
 data/*
