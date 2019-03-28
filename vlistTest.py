@@ -85,8 +85,11 @@ def videoTest(VideoName, net):
 	fps = float(VideoCap.get(cv2.CAP_PROP_FPS))
 	videoWriter = cv2.VideoWriter(VideoName_short + '_out.avi',cv2.VideoWriter_fourcc('D', 'I', 'V', 'X'), fps,	output_size, isColor=False)
         myVideoWriter = cv2.VideoWriter(VideoName_short + '_my_out.avi',cv2.VideoWriter_fourcc('D', 'I', 'V', 'X'), fps, VideoSize, isColor=False)
+	if not os.path.isdir(VideoName_short):
+		os.makedirs(VideoName_short)
 	start_time = time.time()
 	videostart = True
+	batch_idx = 0
 	while VideoCap.get(cv2.CAP_PROP_POS_FRAMES) < VideoFrame - framesnum - frame_skip + overlapframe:
 		if videostart:
 			Input_Batch = _BatchExtraction(VideoCap, framesnum + frame_skip, video_start=videostart)
@@ -103,6 +106,10 @@ def videoTest(VideoName, net):
 			Out_frame = np_predict[0,index, :, :, 0]
 			Out_frame = Out_frame * 255
 			Out_frame = np.uint8(Out_frame)
+			picname = VideoName_short.split('/')[-1]+'_s'+str(batch_idx*framesnum+index)+'.bmp'
+			txtname = VideoName_short.split('/')[-1]+'_'+str(batch_idx*framesnum+index)+'.txt'
+			cv2.imwrite(VideoName_short+'/'+picname, Out_frame)
+			np.savetxt(VideoName_short+'/'+txtname, Out_frame, fmt="%d")
 			videoWriter.write(Out_frame)
                         myFrame = np_predict[0,index, :, :, 0]
                         myFrame = myFrame - np.amin(myFrame)
@@ -111,6 +118,7 @@ def videoTest(VideoName, net):
                         myFrame = myFrame * 255
                         myFrame = np.uint8(myFrame)
                         myVideoWriter.write(myFrame)
+		batch_idx += 1
 	duration = float(time.time() - start_time)
 	print('Total time for this video %f' % (duration))
 	VideoCap.release()
